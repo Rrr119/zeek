@@ -250,6 +250,29 @@ connection {
         * user: string, log=T, optional=T
         * value: string, log=T, optional=T
        }
+  * ja4: record JA4::ConnectionState, log=F, optional=T
+      JA4::ConnectionState {
+        * client: record JA4::ClientHello, log=F, optional=T
+            JA4::ClientHello {
+              * alpn: string, log=F, optional=T
+              * ciphers: vector of string, log=F, optional=T
+              * done: bool, log=F, optional=T
+              * extensions: vector of string, log=F, optional=T
+              * has_sni: bool, log=F, optional=T
+              * signature_algorithms: vector of string, log=F, optional=T
+              * supported_versions: vector of count, log=F, optional=T
+              * version: count, log=F, optional=T
+             }
+        * server: record JA4::ServerHello, log=F, optional=T
+            JA4::ServerHello {
+              * alpn: string, log=F, optional=T
+              * cipher: count, log=F, optional=T
+              * done: bool, log=F, optional=T
+              * extensions: vector of string, log=F, optional=T
+              * supported_versions: vector of count, log=F, optional=T
+              * version: count, log=F, optional=T
+             }
+       }
   * krb: record KRB::Info, log=F, optional=T
       KRB::Info {
         * cipher: string, log=T, optional=T

@@ -87,6 +87,10 @@ Trace Index/Sources:
 - tls//ssl-to-http-server.pcap
   Extracted from CTU-SME-11 after observing detect-protocols not detecting
   SSL for this connection anymore (because it's SSL client hello to a HTTP server).
+- tls/ja4-alpn-order.pcap tls/ja4-extension-order.pcap
+  Generated with OpenAI Codex using Scapy. The traces contain two deterministic
+  TLS 1.3 handshakes for comparing JA4 against JA3 and testing extension-order
+  normalization. Regenerate with the adjacent ``.pcap.py`` scripts.
 - ldap/modify-request.pcapng
   Extracted by Tim from https://weberblog.net/the-ultimate-pcap/ and uploaded
   for #5235. PCAP contains an LDAP connection with a ModifyRequest.

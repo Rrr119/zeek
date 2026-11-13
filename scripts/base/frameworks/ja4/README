@@ -1,0 +1,31 @@
+JA4 framework
+=============
+
+This framework computes JA4 client fingerprints, JA4S server fingerprints, and
+JA4QUIC client fingerprints from the TLS events exposed by Zeek's SSL/TLS
+analyzer. QUIC Initial packets are decrypted by the QUIC analyzer and produce
+the same TLS events.
+
+The ja4.log stream contains one row per fingerprint kind:
+
+	kind fingerprint prefix raw ordered_fingerprint label uid ...
+
+The uid field joins the rows to conn.log. The prefix field is the readable
+tA/B/C section of the fingerprint, while raw contains the unhashed wire-order
+cipher, extension, and signature-algorithm lists.
+
+Published JA4 sorts cipher suites and extension types before hashing. This
+fingerprint is available in the fingerprint field by default. The
+ordered_fingerprint field preserves extension wire order and is always
+available; redefine JA4::use_wire_extension_order to use it as the primary
+fingerprint.
+
+Labels can be assigned by populating JA4::prefix_labels (longest matching
+prefix wins), calling JA4::add_prefix_label, or redefining
+JA4::fingerprint_label.
+
+Fingerprint results for repeated handshake shapes are cached. The cache is
+bounded by JA4::max_cache_entries and oversized keys beyond
+JA4::max_cache_key_length are not retained; cache hits avoid sorting and
+hashing the cipher and extension lists again. Use JA4::clear_cache to drop
+cached values.

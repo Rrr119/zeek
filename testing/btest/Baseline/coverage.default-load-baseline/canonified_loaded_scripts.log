@@ -530,6 +530,9 @@ scripts/base/init-default.zeek
   scripts/base/protocols/tunnels/__load__.zeek
   scripts/base/protocols/xmpp/__load__.zeek
     scripts/base/protocols/xmpp/main.zeek
+  scripts/base/frameworks/ja4/__load__.zeek
+    scripts/base/frameworks/ja4/consts.zeek
+    scripts/base/frameworks/ja4/main.zeek
   scripts/base/files/pe/__load__.zeek
     scripts/base/files/pe/consts.zeek
     scripts/base/files/pe/main.zeek

@@ -87,6 +87,8 @@
 @load base/protocols/tunnels
 @load base/protocols/xmpp
 
+@load base/frameworks/ja4
+
 @load base/files/pe
 @load base/files/hash
 @load base/files/extract
