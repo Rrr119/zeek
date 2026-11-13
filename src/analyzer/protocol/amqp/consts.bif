@@ -1,0 +1,4 @@
+## Maximum AMQP frame payload size accepted by the analyzer.
+##
+## A value of zero disables the limit.
+const AMQP::max_frame_size: count;

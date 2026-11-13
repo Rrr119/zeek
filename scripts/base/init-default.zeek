@@ -51,6 +51,7 @@
 @endif
 
 @load base/protocols/conn
+@load base/protocols/amqp
 @load base/protocols/dce-rpc
 @load base/protocols/dhcp
 @load base/protocols/dhcpv6

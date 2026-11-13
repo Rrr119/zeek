@@ -1,0 +1,149 @@
+## Generated when an AMQP protocol header is parsed. The protocol header
+## identifies AMQP 0-9-1.
+##
+## c: The connection.
+##
+## protocol_id: The AMQP protocol identifier.
+##
+## major: The protocol major version.
+##
+## minor: The protocol minor version.
+##
+## revision: The protocol revision.
+event amqp_protocol_header%(c: connection, protocol_id: count, major: count, minor: count, revision: count%);
+
+## Generated for an AMQP connection.start method.
+##
+## c: The connection.
+##
+## version_major: The AMQP major version announced by the server.
+##
+## version_minor: The AMQP minor version announced by the server.
+##
+## mechanisms: The authentication mechanisms advertised by the server.
+##
+## locales: The locales advertised by the server.
+event amqp_connection_start%(c: connection, version_major: count, version_minor: count, mechanisms: string, locales: string%);
+
+## Generated for an AMQP connection.tune or connection.tune-ok method.
+##
+## c: The connection.
+##
+## is_orig: True if the method came from the connection originator.
+##
+## channel: The AMQP channel.
+##
+## channel_max: The negotiated maximum channel number.
+##
+## frame_max: The negotiated maximum frame size.
+##
+## heartbeat: The negotiated heartbeat interval in seconds.
+event amqp_connection_tune%(c: connection, is_orig: bool, channel: count, channel_max: count, frame_max: count, heartbeat: count%);
+
+## Generated for an AMQP connection.open method.
+##
+## c: The connection.
+##
+## vhost: The virtual host requested by the client.
+event amqp_connection_open%(c: connection, vhost: string%);
+
+## Generated for an AMQP channel.open or channel.open-ok method.
+##
+## c: The connection.
+##
+## is_orig: True if the method came from the connection originator.
+##
+## channel: The AMQP channel.
+event amqp_channel_open%(c: connection, is_orig: bool, channel: count%);
+
+## Generated for an AMQP exchange.declare method.
+##
+## c: The connection.
+##
+## channel: The AMQP channel.
+##
+## exchange: The declared exchange name.
+##
+## exchange_type: The declared exchange type.
+event amqp_exchange_declare%(c: connection, channel: count, exchange: string, exchange_type: string%);
+
+## Generated for an AMQP queue.declare method.
+##
+## c: The connection.
+##
+## channel: The AMQP channel.
+##
+## queue: The declared queue name.
+event amqp_queue_declare%(c: connection, channel: count, queue: string%);
+
+## Generated for an AMQP basic.publish method.
+##
+## c: The connection.
+##
+## is_orig: True if the method came from the connection originator.
+##
+## channel: The AMQP channel.
+##
+## exchange: The target exchange.
+##
+## routing_key: The routing key.
+##
+## mandatory: Whether the mandatory delivery flag is set.
+##
+## immediate: Whether the immediate delivery flag is set.
+event amqp_basic_publish%(c: connection, is_orig: bool, channel: count, exchange: string, routing_key: string, mandatory: bool, immediate: bool%);
+
+## Generated for an AMQP basic.deliver method.
+##
+## c: The connection.
+##
+## is_orig: True if the method came from the connection originator.
+##
+## channel: The AMQP channel.
+##
+## consumer_tag: The consumer tag.
+##
+## delivery_tag: The delivery tag.
+##
+## exchange: The source exchange.
+##
+## routing_key: The routing key.
+##
+## redelivered: Whether the redelivered flag is set.
+event amqp_basic_deliver%(c: connection, is_orig: bool, channel: count, consumer_tag: string, delivery_tag: count, exchange: string, routing_key: string, redelivered: bool%);
+
+## Generated for an AMQP basic.consume method.
+##
+## c: The connection.
+##
+## channel: The AMQP channel.
+##
+## queue: The queue being consumed.
+##
+## consumer_tag: The requested consumer tag.
+event amqp_basic_consume%(c: connection, channel: count, queue: string, consumer_tag: string%);
+
+## Generated for an AMQP content header frame.
+##
+## c: The connection.
+##
+## channel: The AMQP channel.
+##
+## class_id: The class of the message content.
+##
+## body_size: The total message body size advertised by the content header.
+event amqp_content_header%(c: connection, channel: count, class_id: count, body_size: count%);
+
+## Generated for each AMQP content body frame.
+##
+## c: The connection.
+##
+## channel: The AMQP channel.
+##
+## size: The payload size of this frame, not the complete message body size.
+event amqp_content_body%(c: connection, channel: count, size: count%);
+
+## Generated for an AMQP heartbeat frame.
+##
+## c: The connection.
+event amqp_heartbeat%(c: connection%);

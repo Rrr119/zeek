@@ -6274,6 +6274,16 @@ export {
 	const max_frag_data = 1024 * 1024 &redef;
 }
 
+module AMQP;
+
+export {
+	## Maximum AMQP frame payload size accepted by the analyzer. AMQP's
+	## frame-max negotiation normally limits frames well below this value;
+	## this bound prevents malformed or truncated traffic from causing
+	## excessive buffering. A value of zero disables the limit.
+	const max_frame_size = 16 * 1024 * 1024 &redef;
+}
+
 module NCP;
 
 export {
