@@ -707,6 +707,20 @@ export {
 	const max_application_layer_fragment_size = 100 * 1024 &redef;
 }
 
+module OPCUA;
+
+export {
+	## Maximum bytes buffered for one OPC UA message. Messages above this
+	## limit raise an analyzer violation and stop OPC UA parsing.
+	const max_message_size = 16 * 1024 * 1024 &redef;
+
+	## Maximum NodeIds retained from one service request.
+	const max_node_ids = 64 &redef;
+
+	## Maximum ExtensionObject type NodeIds retained from one message.
+	const max_extension_objects = 64 &redef;
+}
+
 module FTP;
 
 export {

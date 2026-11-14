@@ -82,6 +82,10 @@ Network Protocols
     - Network Time Protocol
     - :zeek:type:`NTP::Info`
 
+  * - :file:`opcua.log`
+    - OPC UA binary messages
+    - :zeek:type:`OPCUA::Info`
+
   * - :file:`postgresql.log`
     - PostgreSQL events
     - :zeek:type:`PostgreSQL::Info`

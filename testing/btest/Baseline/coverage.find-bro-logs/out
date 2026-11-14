@@ -42,6 +42,7 @@ ntp
 ntp_control
 ntp_private
 ocsp
+opcua
 openflow
 packet_filter
 pe

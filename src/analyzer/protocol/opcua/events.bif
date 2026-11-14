@@ -1,0 +1,51 @@
+## Generated for each parsed OPC UA TCP message or reassembled message.
+##
+## This event is generated for Hello/Acknowledge messages, secure-channel
+## messages, and service messages decoded from one or more message chunks.
+##
+## c: The connection.
+##
+## is_orig: True if the message originated at the TCP originator.
+##
+## message_type: OPC UA transport message type (``HEL``, ``ACK``, ``OPN``,
+##               ``MSG``, ``CLO``, or ``ABO``).
+##
+## service: The decoded service name, or ``Encrypted``/``Unknown`` when body
+##          decoding is not possible.
+##
+## endpoint: The most recently observed endpoint URL on the connection.
+##
+## security_policy: The most recently observed OPC UA security policy URI.
+##
+## security_mode: The negotiated security mode (``None``, ``Sign``, or
+##                ``SignAndEncrypt``).
+##
+## status: StatusCode value from the response. For service responses with
+##         per-operation results, this is the first non-Good result, if any.
+##
+## has_status: True if *status* was present in the message.
+##
+## session_id: The NodeId of the most recently observed session.
+##
+## subscription_id: The most recently observed subscription identifier.
+##
+## has_subscription: True if *subscription_id* applies to this message.
+##
+## request_id: The secure-channel request identifier.
+##
+## chunk_type: ``C`` for a continuation chunk or ``F`` for a final chunk.
+##
+## chunk_count: Number of chunks used for this message.
+##
+## message_size: Size of the final transport chunk, including its message
+##               header, or the reassembled chunk payload size.
+##
+## node_ids: NodeIds retained from the service request.
+##
+## extension_objects: ExtensionObject type NodeIds observed in the message.
+event opcua_message%(c: connection, is_orig: bool, message_type: string, service: string,
+                     endpoint: string, security_policy: string, security_mode: string,
+                     status: count, has_status: bool, session_id: string,
+                     subscription_id: count, has_subscription: bool, request_id: count,
+                     chunk_type: string, chunk_count: count, message_size: count,
+                     node_ids: string_vec, extension_objects: string_vec%);

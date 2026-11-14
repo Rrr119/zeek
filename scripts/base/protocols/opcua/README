@@ -1,0 +1,50 @@
+OPC UA binary protocol analyzer
+================================
+
+The analyzer registers TCP port 4840 by default and uses a DPD signature for
+Hello messages on other ports. Configure additional ports with:
+
+    redef OPCUA::ports += { 4841/tcp };
+
+Supported transport and service messages
+----------------------------------------
+
+Transport messages:
+
+* Hello and Acknowledge, including endpoint URL and buffer limits
+* OpenSecureChannel request and response
+* MSG, CLO, and ABO message chunks
+* Continuation (C) and final (F) chunk reassembly
+
+Service messages:
+
+* GetEndpoints
+* CreateSession
+* Read and Write
+* CreateSubscription
+* Publish
+* ServiceFault
+
+The decoder extracts NodeIds, ExtensionObject type NodeIds, StatusCodes,
+endpoint URLs, security policy URIs, security modes, session NodeIds, request
+identifiers, and subscription identifiers. NodeIds and ExtensionObject type
+NodeIds are bounded by OPCUA::max_node_ids and
+OPCUA::max_extension_objects.
+
+Limitations
+-----------
+
+* Only unencrypted service bodies are decoded. SignAndEncrypt messages are
+  logged with service "Encrypted" after their clear-text transport and
+  security headers have been parsed.
+* The analyzer decodes the fields needed for audit visibility. It does not
+  model complete OPC UA information models, browse paths, method arguments,
+  monitored-item filters, or event-filter contents.
+* GetEndpoints and CreateSession responses may contain many endpoint
+  descriptions. The first description is used for the logged endpoint and
+  security policy; the remainder are validated but not emitted individually.
+* Abort and CloseSecureChannel support is limited to transport-level
+  visibility and headers.
+* Messages larger than OPCUA::max_message_size, malformed chunk lengths, and
+  TCP gaps stop further parsing for the connection and raise an analyzer
+  violation.

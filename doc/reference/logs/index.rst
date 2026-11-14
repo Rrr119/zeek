@@ -23,6 +23,7 @@ packages <using-packages>` add many more.
    pe
    dhcp
    ntp
+   opcua
    smb
    irc
    ldap

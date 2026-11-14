@@ -1,0 +1,11 @@
+module OPCUA;
+
+## Maximum number of bytes buffered for one OPC UA message. Larger messages
+## raise an analyzer violation and disable further parsing on the connection.
+const max_message_size: count;
+
+## Maximum number of individual NodeIds retained from one service request.
+const max_node_ids: count;
+
+## Maximum number of ExtensionObject type identifiers retained from one message.
+const max_extension_objects: count;

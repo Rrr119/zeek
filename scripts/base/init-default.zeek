@@ -68,6 +68,7 @@
 @load base/protocols/mysql
 @load base/protocols/ntlm
 @load base/protocols/ntp
+@load base/protocols/opcua
 @load base/protocols/pop3
 @load base/protocols/postgresql
 @load base/protocols/quic
