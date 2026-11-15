@@ -425,6 +425,61 @@ field. One example is Zeek’s log for this DHCP Discover message:
 
 This log entry does not have a ``server_addr`` field, so the query above returns a null result.
 
+DHCP Fingerprinting
+===================
+
+DHCP clients tell servers a good deal about themselves in the options of
+their DHCPDISCOVER and DHCPREQUEST messages. Two options are particularly
+useful for endpoint fingerprinting:
+
+- Option 55, the *parameter request list*, is an ordered list of the DHCP
+  option codes the client would like the server to return. Different
+  operating systems and DHCP client implementations request different
+  options in different orders, so this list is a stable and widely used
+  fingerprinting signal.
+- Option 60, the *vendor class identifier*, is a string that often names
+  the vendor or operating system family, such as ``MSFT 5.0`` for a
+  Microsoft client or an ``android-dhcp-*`` value for an Android device.
+
+Zeek logs the raw option 60 string in the ``vendor_class`` field and the
+raw option 55 list in the ``param_request_list`` field of :file:`dhcp.log`.
+It additionally derives a compact textual fingerprint from the parameter
+request list in the ``dhcp_fingerprint`` field. The fingerprint is the
+comma-separated concatenation of the requested option codes, preserving
+the client's ordering:
+
+.. literal-emph::
+
+  1,3,6,15,31,33,43,44,46,47,119,252
+
+Two clients that produce the same fingerprint request the same DHCP
+options in the same order and typically belong to the same operating
+system or device family. The
+:zeek:see:`policy/protocols/dhcp/fingerprint-clusters` policy script
+groups clients by this fingerprint. Loading it adds a
+:file:`dhcp_fp_cluster.log`. A record is written each time a new client
+hardware address joins a cluster, so a fingerprint observed on multiple
+clients produces several records whose ``client_macs`` set and
+``num_clients`` grow over time. The current clusters also remain available
+at runtime in the :zeek:see:`DHCP::fingerprint_clusters` table. For
+example, the second Microsoft client joining the shared fingerprint
+produces:
+
+::
+
+  {
+    "ts": "2023-11-14T22:13:20.000000Z",
+    "dhcp_fingerprint": "1,3,6,15,31,33,43,44,46,47,119,252",
+    "num_clients": 2,
+    "client_macs": [
+      "02:00:00:00:00:01",
+      "02:00:00:00:00:02"
+    ]
+  }
+
+The policy also raises a :zeek:see:`DHCP::new_fingerprint_cluster_member`
+event each time a new client MAC joins a cluster.
+
 Conclusion
 ==========
 

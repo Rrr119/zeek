@@ -83,13 +83,20 @@ Hooks
 :zeek:id:`DHCP::log_policy`: :zeek:type:`Log::PolicyHook`
 ========================================================= =
 
+Functions
+#########
+======================================================== ============================================================
+:zeek:id:`DHCP::make_fingerprint`: :zeek:type:`function` Build a DHCP fingerprint from an option 55 parameter request
+                                                         list.
+======================================================== ============================================================
+
 
 Detailed Interface
 ~~~~~~~~~~~~~~~~~~
 Runtime Options
 ###############
 .. zeek:id:: DHCP::max_msg_types_per_log_entry
-   :source-code: base/protocols/dhcp/main.zeek 105 105
+   :source-code: base/protocols/dhcp/main.zeek 121 121
 
    :Type: :zeek:type:`count`
    :Attributes: :zeek:attr:`&redef`
@@ -98,7 +105,7 @@ Runtime Options
    The maximum number of msg_types allowed in a single log entry.
 
 .. zeek:id:: DHCP::max_tracked_transactions
-   :source-code: base/protocols/dhcp/main.zeek 112 112
+   :source-code: base/protocols/dhcp/main.zeek 128 128
 
    :Type: :zeek:type:`count`
    :Attributes: :zeek:attr:`&redef`
@@ -111,7 +118,7 @@ Runtime Options
    ``DHCP_max_tracked_transactions_exceeded`` weird.
 
 .. zeek:id:: DHCP::max_txid_watch_time
-   :source-code: base/protocols/dhcp/main.zeek 99 99
+   :source-code: base/protocols/dhcp/main.zeek 115 115
 
    :Type: :zeek:type:`interval`
    :Attributes: :zeek:attr:`&redef`
@@ -122,7 +129,7 @@ Runtime Options
    transaction narrative.
 
 .. zeek:id:: DHCP::max_uids_per_log_entry
-   :source-code: base/protocols/dhcp/main.zeek 102 102
+   :source-code: base/protocols/dhcp/main.zeek 118 118
 
    :Type: :zeek:type:`count`
    :Attributes: :zeek:attr:`&redef`
@@ -168,7 +175,7 @@ Redefinable Options
 State Variables
 ###############
 .. zeek:id:: DHCP::log_info
-   :source-code: base/protocols/dhcp/main.zeek 124 124
+   :source-code: base/protocols/dhcp/main.zeek 140 140
 
    :Type: :zeek:type:`DHCP::Info`
    :Default:
@@ -188,6 +195,9 @@ State Variables
             host_name=<uninitialized>
             client_fqdn=<uninitialized>
             domain=<uninitialized>
+            vendor_class=<uninitialized>
+            param_request_list=<uninitialized>
+            dhcp_fingerprint=<uninitialized>
             requested_addr=<uninitialized>
             assigned_addr=<uninitialized>
             lease_time=<uninitialized>
@@ -214,7 +224,7 @@ State Variables
 Types
 #####
 .. zeek:type:: DHCP::Info
-   :source-code: base/protocols/dhcp/main.zeek 25 94
+   :source-code: base/protocols/dhcp/main.zeek 25 110
 
    :Type: :zeek:type:`record`
 
@@ -285,6 +295,30 @@ Types
    .. zeek:field:: domain :zeek:type:`string` :zeek:attr:`&log` :zeek:attr:`&optional`
 
       Domain given by the server in option 15.
+
+
+   .. zeek:field:: vendor_class :zeek:type:`string` :zeek:attr:`&log` :zeek:attr:`&optional`
+
+      Vendor class identifier sent by the client in option 60.
+      It commonly identifies the client's operating system or
+      vendor, e.g. "MSFT 5.0".
+
+
+   .. zeek:field:: param_request_list :zeek:type:`vector` of :zeek:type:`count` :zeek:attr:`&log` :zeek:attr:`&optional`
+
+      The parameter request list sent by the client in option 55.
+      Each entry is a DHCP option code the client wants the
+      server to return, in the order requested by the client.
+
+
+   .. zeek:field:: dhcp_fingerprint :zeek:type:`string` :zeek:attr:`&log` :zeek:attr:`&optional`
+
+      A fingerprint derived from the client's option 55 parameter
+      request list.  It is the comma-separated list of requested
+      option codes, preserving the client's ordering.  Clients
+      sharing the same fingerprint request the same DHCP options
+      in the same order and can be grouped together for endpoint
+      fingerprinting.  See :zeek:see:`DHCP::make_fingerprint`.
 
 
    .. zeek:field:: requested_addr :zeek:type:`addr` :zeek:attr:`&log` :zeek:attr:`&optional`
@@ -390,7 +424,7 @@ Types
 Events
 ######
 .. zeek:id:: DHCP::aggregate_msgs
-   :source-code: base/protocols/dhcp/main.zeek 118 118
+   :source-code: base/protocols/dhcp/main.zeek 134 134
 
    :Type: :zeek:type:`event` (ts: :zeek:type:`time`, id: :zeek:type:`conn_id`, uid: :zeek:type:`string`, is_orig: :zeek:type:`bool`, msg: :zeek:type:`DHCP::Msg`, options: :zeek:type:`DHCP::Options`)
 
@@ -400,7 +434,7 @@ Events
    :zeek:see:`DHCP::log_info`.
 
 .. zeek:id:: DHCP::log_dhcp
-   :source-code: policy/protocols/dhcp/software.zeek 40 65
+   :source-code: base/protocols/dhcp/main.zeek 144 144
 
    :Type: :zeek:type:`event` (rec: :zeek:type:`DHCP::Info`)
 
@@ -414,5 +448,25 @@ Hooks
 
    :Type: :zeek:type:`Log::PolicyHook`
 
+
+Functions
+#########
+.. zeek:id:: DHCP::make_fingerprint
+   :source-code: base/protocols/dhcp/main.zeek 174 187
+
+   :Type: :zeek:type:`function` (param_list: :zeek:type:`index_vec`) : :zeek:type:`string`
+
+   Build a DHCP fingerprint from an option 55 parameter request
+   list.  The fingerprint is the comma-separated concatenation of
+   the requested option codes, preserving their order, e.g.
+   ``1,3,6,15,31,33``.  An empty vector produces an empty string.
+
+
+   :param param_list: The parameter request list as parsed from option 55,
+               available as the ``param_list`` field of
+               :zeek:type:`DHCP::Options`.
+
+
+   :returns: the fingerprint string.
 
 

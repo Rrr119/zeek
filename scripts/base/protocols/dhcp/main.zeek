@@ -67,6 +67,22 @@ export {
 		## Domain given by the server in option 15.
 		domain:         string      &log &optional;
 
+		## Vendor class identifier sent by the client in option 60.
+		## It commonly identifies the client's operating system or
+		## vendor, e.g. "MSFT 5.0".
+		vendor_class:   string      &log &optional;
+		## The parameter request list sent by the client in option 55.
+		## Each entry is a DHCP option code the client wants the
+		## server to return, in the order requested by the client.
+		param_request_list: vector of count &log &optional;
+		## A fingerprint derived from the client's option 55 parameter
+		## request list.  It is the comma-separated list of requested
+		## option codes, preserving the client's ordering.  Clients
+		## sharing the same fingerprint request the same DHCP options
+		## in the same order and can be grouped together for endpoint
+		## fingerprinting.  See :zeek:see:`DHCP::make_fingerprint`.
+		dhcp_fingerprint: string    &log &optional;
+
 		## IP address requested by the client.
 		requested_addr: addr        &log &optional;
 		## IP address assigned by the server.
@@ -126,6 +142,18 @@ export {
 	## Event that can be handled to access the DHCP
 	## record as it is sent on to the logging framework.
 	global log_dhcp: event(rec: Info);
+
+	## Build a DHCP fingerprint from an option 55 parameter request
+	## list.  The fingerprint is the comma-separated concatenation of
+	## the requested option codes, preserving their order, e.g.
+	## ``1,3,6,15,31,33``.  An empty vector produces an empty string.
+	##
+	## param_list: The parameter request list as parsed from option 55,
+	##             available as the ``param_list`` field of
+	##             :zeek:type:`DHCP::Options`.
+	##
+	## Returns: the fingerprint string.
+	global make_fingerprint: function(param_list: index_vec): string;
 }
 
 # Add the dhcp info to the connection record.
@@ -141,6 +169,21 @@ event zeek_init() &priority=5
 	{
 	Log::create_stream(DHCP::LOG, Log::Stream($columns=Info, $ev=log_dhcp, $path="dhcp", $policy=log_policy));
 	Analyzer::register_for_ports(Analyzer::ANALYZER_DHCP, server_ports, client_ports);
+	}
+
+function make_fingerprint(param_list: index_vec): string
+	{
+	local fingerprint = "";
+
+	for ( i in param_list )
+		{
+		if ( i > 0 )
+			fingerprint += ",";
+
+		fingerprint += fmt("%d", param_list[i]);
+		}
+
+	return fingerprint;
 	}
 
 function write_log(info: Info)
@@ -273,6 +316,17 @@ event DHCP::aggregate_msgs(ts: time, id: conn_id, uid: string, is_orig: bool, ms
 
 		if ( options?$client_fqdn )
 			log_info$client_fqdn = options$client_fqdn$domain_name;
+
+		if ( options?$vendor_class )
+			log_info$vendor_class = options$vendor_class;
+
+		if ( options?$param_list )
+			{
+			log_info$param_request_list = options$param_list;
+
+			if ( |options$param_list| > 0 )
+				log_info$dhcp_fingerprint = DHCP::make_fingerprint(options$param_list);
+			}
 
 		if ( options?$client_id &&
 		     options$client_id$hwtype == 1 ) # ETHERNET

@@ -44,6 +44,13 @@ Breaking Changes
 New Functionality
 -----------------
 
+- The DHCP analyzer now logs the option 55 parameter request list
+  (``param_request_list``), the option 60 vendor class identifier
+  (``vendor_class``), and a derived endpoint fingerprint
+  (``dhcp_fingerprint``) in ``dhcp.log``. A new
+  ``policy/protocols/dhcp/fingerprint-clusters`` script groups clients by
+  fingerprint and writes the clusters to ``dhcp_fp_cluster.log``.
+
 - The DHCPv6 analyzer now supports prefix delegation (IA_PD) and logs
   assigned prefixes in ``dhcpv6.log`` via the ``assigned_prefix`` field.
 

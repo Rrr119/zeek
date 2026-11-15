@@ -1034,6 +1034,11 @@ Types
          (present if :doc:`/scripts/policy/protocols/conn/multicast-participants.zeek` is loaded)
 
 
+      .. zeek:enum:: DHCP::FINGERPRINT_CLUSTER_LOG Log::ID
+
+         (present if :doc:`/scripts/policy/protocols/dhcp/fingerprint-clusters.zeek` is loaded)
+
+
       .. zeek:enum:: Known::MODBUS_LOG Log::ID
 
          (present if :doc:`/scripts/policy/protocols/modbus/known-masters-slaves.zeek` is loaded)

@@ -101,6 +101,7 @@
 @load protocols/dhcp/msg-orig.zeek
 @load protocols/dhcp/software.zeek
 @load protocols/dhcp/sub-opts.zeek
+@load protocols/dhcp/fingerprint-clusters.zeek
 @load protocols/dns/auth-addl.zeek
 @load protocols/dns/detect-external-names.zeek
 #@load protocols/dns/disable-opcode-log-fields.zeek

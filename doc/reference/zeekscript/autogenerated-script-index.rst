@@ -616,6 +616,7 @@
    policy/protocols/conn/vlan-logging.zeek </scripts/policy/protocols/conn/vlan-logging.zeek>
    policy/protocols/conn/pppoe-session-id-logging.zeek </scripts/policy/protocols/conn/pppoe-session-id-logging.zeek>
    policy/protocols/conn/weirds.zeek </scripts/policy/protocols/conn/weirds.zeek>
+   policy/protocols/dhcp/fingerprint-clusters.zeek </scripts/policy/protocols/dhcp/fingerprint-clusters.zeek>
    policy/protocols/dhcp/msg-orig.zeek </scripts/policy/protocols/dhcp/msg-orig.zeek>
    policy/protocols/dhcp/software.zeek </scripts/policy/protocols/dhcp/software.zeek>
    policy/protocols/dhcp/sub-opts.zeek </scripts/policy/protocols/dhcp/sub-opts.zeek>
