@@ -1,0 +1,18 @@
+{
+  "uid": "23353",
+  "harness": "Codex CLI",
+  "snapshotUrl": "https://github.com/Rrr119/zeek/commit/348ec2a25171c9918cf196c3408046a8e837a0a1",
+  "harnessVersion": "codex-cli 0.167.2",
+  "operatingSystem": "Ubuntu 26.04.1 LTS",
+  "operatingSystemCell": [
+    "MacOS/Linux"
+  ],
+  "outputDirectory": "/home/dev/feedback/uid23353",
+  "wslDistro": "Ubuntu-26.04",
+  "B": {
+    "success": false,
+    "canceled": true,
+    "error": "任务已取消",
+    "side": "B"
+  }
+}

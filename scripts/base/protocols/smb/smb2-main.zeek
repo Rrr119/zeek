@@ -31,7 +31,9 @@ event smb2_message(c: connection, hdr: SMB2::Header, is_orig: bool) &priority=5
 	if ( mid !in smb_state$pending_cmds )
 		{
 		local tmp_file = SMB::FileInfo($uid=c$uid, $id=c$id);
-		local tmp_cmd = SMB::CmdInfo($uid=c$uid, $id=c$id, $version="SMB2", $command = SMB2::commands[hdr$command]);
+		local tmp_cmd = SMB::CmdInfo($uid=c$uid, $id=c$id, $version="SMB2",
+		                             $command=SMB2::commands[hdr$command],
+		                             $encrypted=smb_state$encrypted);
 		tmp_cmd$referenced_file = tmp_file;
 		smb_state$pending_cmds[mid] = tmp_cmd;
 		}
@@ -107,6 +109,22 @@ event smb2_negotiate_request(c: connection, hdr: SMB2::Header, dialects: index_v
 
 event smb2_negotiate_response(c: connection, hdr: SMB2::Header, response: SMB2::NegotiateResponse) &priority=5
 	{
+	if ( ! c?$smb_state )
+		return;
+
+	local encryption_negotiated = response$capabilities$encryption;
+	for ( i in response$negotiate_context_values )
+		{
+		if ( response$negotiate_context_values[i]?$encryption_info )
+			{
+			encryption_negotiated = T;
+			break;
+			}
+		}
+
+	if ( encryption_negotiated )
+		c$smb_state$encryption_negotiated = T;
+
 	if ( c$smb_state$current_cmd?$smb2_offered_dialects )
 		{
 		for ( i in c$smb_state$current_cmd$smb2_offered_dialects )
@@ -121,6 +139,37 @@ event smb2_negotiate_response(c: connection, hdr: SMB2::Header, response: SMB2::
 		}
 	}
 
+event smb2_session_setup_response(c: connection, hdr: SMB2::Header, response: SMB2::SessionSetupResponse) &priority=5
+	{
+	if ( ! c?$smb_state )
+		return;
+
+	if ( response$flags$encrypt )
+		{
+		c$smb_state$encryption_negotiated = T;
+		c$smb_state$encrypted = T;
+		c$smb_state$encrypted_session_id = hdr$session_id;
+		}
+	}
+
+event smb2_transform_header(c: connection, hdr: SMB2::Transform_header) &priority=5
+	{
+	if ( ! c?$smb_state )
+		{
+		local state: SMB::State;
+		state$fid_map = table();
+		state$tid_map = table();
+		state$pending_cmds = table();
+		c$smb_state = state;
+		}
+
+	if ( hdr$encrypted )
+		{
+		c$smb_state$encrypted = T;
+		c$smb_state$encrypted_session_id = hdr$session_id;
+		}
+	}
+
 event smb2_tree_connect_request(c: connection, hdr: SMB2::Header, path: string) &priority=5
 	{
 	c$smb_state$current_tree$path = path;
@@ -129,6 +178,7 @@ event smb2_tree_connect_request(c: connection, hdr: SMB2::Header, path: string) 
 event smb2_tree_connect_response(c: connection, hdr: SMB2::Header, response: SMB2::TreeConnectResponse) &priority=5
 	{
 	c$smb_state$current_tree$share_type = SMB2::share_types[response$share_type];
+	c$smb_state$current_tree$encrypted = c$smb_state$encrypted;
 	}
 
 event smb2_tree_connect_response(c: connection, hdr: SMB2::Header, response: SMB2::TreeConnectResponse) &priority=-5

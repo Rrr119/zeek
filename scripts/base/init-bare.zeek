@@ -4968,6 +4968,30 @@ export {
 		attrs      : SMB2::FileAttrs;
 	};
 
+	## Capabilities advertised in an SMB2 *negotiate* response.
+	##
+	## For more information, see MS-SMB2:2.2.4
+	##
+	## .. zeek:see:: smb2_negotiate_response
+	type SMB2::Capabilities: record {
+		## The raw capabilities bit field.
+		raw : count;
+		## The server supports Distributed File System (DFS) operations.
+		dfs : bool;
+		## The server supports leasing.
+		leasing : bool;
+		## The server supports large MTUs.
+		large_mtu : bool;
+		## The server supports multi-channel connections.
+		multi_channel : bool;
+		## The server supports persistent file handles.
+		persistent_handles : bool;
+		## The server supports directory leasing.
+		directory_leasing : bool;
+		## The server supports encryption.
+		encryption : bool;
+	};
+
 	## Preauthentication information as defined in SMB v. 3.1.1
 	##
 	## For more information, see MS-SMB2:2.3.1.1
@@ -5049,6 +5073,8 @@ export {
 		negotiate_context_count : count;
 		## An array of context values in SMB v. 3.1.1.
 		negotiate_context_values 	  : SMB2::NegotiateContextValues;
+		## The capabilities supported by the server.
+		capabilities : SMB2::Capabilities;
 	};
 
 	## The request sent by the client to request a new authenticated session
@@ -5191,6 +5217,10 @@ export {
 		flags         : count;
 		## A value that uniquely identifies the established session for the command.
 		session_id    : count;
+		## If set, the transformed message is encrypted.
+		encrypted     : bool;
+		## If set, the transformed message is compressed.
+		compressed    : bool;
 	};
 }
 

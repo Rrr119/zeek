@@ -1,5 +1,5 @@
 enum smb3_capabilities {
-	SMB2_GLOBAL_CAP_DFS                   = 0x00,
+	SMB2_GLOBAL_CAP_DFS                   = 0x01,
 	SMB2_GLOBAL_CAP_LEASING               = 0x02,
 	SMB2_GLOBAL_CAP_LARGE_MTU             = 0x04,
 	SMB2_GLOBAL_CAP_MULTI_CHANNEL         = 0x08,
@@ -59,6 +59,17 @@ refine connection SMB_Conn += {
 				}
 
 			nr->Assign(6, std::move(cv));
+
+			auto capabilities = zeek::make_intrusive<zeek::RecordVal>(zeek::BifType::Record::SMB2::Capabilities);
+			capabilities->Assign(0, ${val.capabilities});
+			capabilities->Assign(1, (${val.capabilities} & SMB2_GLOBAL_CAP_DFS) != 0);
+			capabilities->Assign(2, (${val.capabilities} & SMB2_GLOBAL_CAP_LEASING) != 0);
+			capabilities->Assign(3, (${val.capabilities} & SMB2_GLOBAL_CAP_LARGE_MTU) != 0);
+			capabilities->Assign(4, (${val.capabilities} & SMB2_GLOBAL_CAP_MULTI_CHANNEL) != 0);
+			capabilities->Assign(5, (${val.capabilities} & SMB2_GLOBAL_CAP_PERSISTENT_HANDLES) != 0);
+			capabilities->Assign(6, (${val.capabilities} & SMB2_GLOBAL_CAP_DIRECTORY_LEASING) != 0);
+			capabilities->Assign(7, (${val.capabilities} & SMB2_GLOBAL_CAP_ENCRYPTION) != 0);
+			nr->Assign(7, std::move(capabilities));
 
 			zeek::BifEvent::enqueue_smb2_negotiate_response(zeek_analyzer(), zeek_analyzer()->Conn(),
 			                                                BuildSMB2HeaderVal(h),

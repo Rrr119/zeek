@@ -54,6 +54,42 @@ and :zeek:see:`SMB::TreeInfo`.
 When presenting information in this section, my general convention is to bold
 commands and items of interest in the resulting output.
 
+SMB3 Encryption
+===============
+
+SMB 3.x supports encrypting individual messages with an SMB2 transform header.
+Zeek does not decrypt those messages, but it does parse the negotiation,
+session-setup, and transform-header metadata needed to identify encrypted
+sessions.
+
+The negotiated capabilities are available in
+:zeek:field:`SMB2::NegotiateResponse$capabilities`. For SMB 3.1.1, the
+``SMB2_ENCRYPTION_CAPABILITIES`` negotiate context is also available in
+:zeek:field:`SMB2::NegotiateResponse$negotiate_context_values`. A server can
+require encryption for a session by setting the ``encrypt`` flag in
+:zeek:field:`SMB2::SessionSetupResponse$flags`. Encrypted messages raise
+:zeek:see:`smb2_transform_header`, whose ``encrypted`` and ``compressed``
+fields decode the transform header's flags.
+
+The :zeek:see:`SMB::State` record tracks whether a connection has negotiated
+encryption and whether encrypted traffic has actually been observed:
+
+* ``encryption_negotiated`` is set when the server advertises encryption in
+  the negotiate response, offers the SMB 3.1.1 encryption context, or requires
+  encryption in the session-setup response.
+* ``encrypted`` is set once an encrypted transform header is observed, or
+  when session setup requires encryption.
+* ``encrypted_session_id`` contains the most recently observed encrypted
+  SMB2 session ID, when available.
+
+The :zeek:file:`smb_cmd.log`, :zeek:file:`smb_files.log`, and
+:zeek:file:`smb_mapping.log` records include an ``encrypted`` field. It
+indicates that the connection carrying the record is known to use SMB3
+encryption. Because encrypted SMB2 commands cannot be parsed, there may be no
+further command or file records after a session becomes encrypted. Correlate
+the remaining records with the transform and connection metadata using the
+``uid`` field.
+
 Leveraging BZAR
 ===============
 

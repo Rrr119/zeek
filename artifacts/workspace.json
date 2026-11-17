@@ -1,0 +1,17 @@
+{
+  "root": "/home/dev/feedback/uid23353",
+  "B": "/home/dev/feedback/uid23353",
+  "sha": "369b52ffd197510968e4b382ace9fa40e413f6f2",
+  "wslDistro": "Ubuntu-26.04",
+  "source": {
+    "owner": "zeek",
+    "repo": "zeek",
+    "sha": "369b52ffd197510968e4b382ace9fa40e413f6f2"
+  },
+  "fork": {
+    "owner": "Rrr119",
+    "repo": "zeek",
+    "cloneUrl": "https://github.com/Rrr119/zeek.git"
+  },
+  "at": "2026-11-17T16:35:01.447Z"
+}

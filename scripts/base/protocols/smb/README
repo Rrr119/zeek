@@ -1,1 +1,6 @@
 Support for SMB protocol analysis.
+
+SMB 3.x transform headers are parsed to identify encrypted messages. The
+SMB::State record tracks negotiated and observed encryption, and the
+smb_cmd, smb_files, and smb_mapping logs expose an encrypted field. Encrypted
+SMB2 payloads are not decrypted.

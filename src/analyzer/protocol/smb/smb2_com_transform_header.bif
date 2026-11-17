@@ -8,6 +8,9 @@
 ##
 ## hdr: The parsed transformed header message, which is starting with \xfdSMB and different from SMB1 and SMB2 headers.
 ##
+## The ``hdr$encrypted`` and ``hdr$compressed`` fields decode the transform
+## header's flags. Zeek cannot decrypt the encapsulated SMB2 message.
+##
 ## .. zeek:see:: smb2_message
 event smb2_transform_header%(c: connection, hdr: SMB2::Transform_header%);
 

@@ -78,6 +78,8 @@ export {
 		prev_name		: string  &log &optional;
 		## Last time this file was modified.
 		times			: SMB::MACTimes &log &optional;
+		## Whether this connection carried SMB3 encrypted traffic.
+		encrypted		: bool &log &default=F;
 	};
 
 	## This record is for the smb_mapping.log
@@ -98,6 +100,8 @@ export {
 		## If this is SMB2, a share type will be included.  For SMB1,
 		## the type of share will be deduced and included as well.
 		share_type          : string &log &default="DISK";
+		## Whether this connection carried SMB3 encrypted traffic.
+		encrypted           : bool &log &default=F;
 	};
 
 	## This record is for the smb_cmd.log
@@ -136,6 +140,8 @@ export {
 		referenced_file	: FileInfo &log &optional;
 		## If the command referenced a tree, store it here.
 		referenced_tree	: TreeInfo &optional;
+		## Whether this connection carried SMB3 encrypted traffic.
+		encrypted		: bool &log &default=F;
 	};
 
 	## This record stores the SMB state of in-flight commands,
@@ -159,6 +165,13 @@ export {
 		## files over and over in the smb files log.
 		## This only applies to files seen in a single connection.
 		recent_files : set[string] &default=set() &read_expire=3min;
+
+		## Whether this connection has carried SMB3 encrypted traffic.
+		encrypted : bool &default=F;
+		## Whether SMB3 encryption was negotiated for this connection.
+		encryption_negotiated : bool &default=F;
+		## The most recently observed encrypted SMB2 session ID.
+		encrypted_session_id : count &optional;
 	};
 
 	## Everything below here is used internally in the SMB scripts.
@@ -229,6 +242,7 @@ function insert_new_tree_info(c: connection, tid: count): TreeInfo
 		}
 
 	local tmp_tree = SMB::TreeInfo($uid=c$uid, $id=c$id);
+	tmp_tree$encrypted = smb_state$encrypted;
 	smb_state$tid_map[tid] = tmp_tree;
 	return tmp_tree;
 	}
@@ -236,6 +250,11 @@ function insert_new_tree_info(c: connection, tid: count): TreeInfo
 function write_file_log(state: State)
 	{
 	local f = state$current_file;
+	if ( state?$current_cmd )
+		f$encrypted = state$current_cmd$encrypted;
+	else
+		f$encrypted = state$encrypted;
+
 	if ( f?$name &&
 	     f$action in logged_file_actions )
 		{

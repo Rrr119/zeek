@@ -744,11 +744,13 @@ connection {
             SMB::CmdInfo {
               * argument: string, log=T, optional=T
               * command: string, log=T, optional=F
+              * encrypted: bool, log=T, optional=T
               * id: record conn_id, log=T, optional=F
                   conn_id { ... }
               * referenced_file: record SMB::FileInfo, log=T, optional=T
                   SMB::FileInfo {
                     * action: enum SMB::Action, log=T, optional=T
+                    * encrypted: bool, log=T, optional=T
                     * fid: count, log=F, optional=T
                     * fuid: string, log=T, optional=T
                     * id: record conn_id, log=T, optional=F
@@ -773,6 +775,7 @@ connection {
                    }
               * referenced_tree: record SMB::TreeInfo, log=F, optional=T
                   SMB::TreeInfo {
+                    * encrypted: bool, log=T, optional=T
                     * id: record conn_id, log=T, optional=F
                         conn_id { ... }
                     * native_file_system: string, log=T, optional=T
@@ -799,6 +802,9 @@ connection {
             SMB::FileInfo { ... }
         * current_tree: record SMB::TreeInfo, log=F, optional=T
             SMB::TreeInfo { ... }
+        * encrypted: bool, log=F, optional=T
+        * encrypted_session_id: count, log=F, optional=T
+        * encryption_negotiated: bool, log=F, optional=T
         * fid_map: table[count] of record SMB::FileInfo, log=F, optional=T
             SMB::FileInfo { ... }
         * pending_cmds: table[count] of record SMB::CmdInfo, log=F, optional=T

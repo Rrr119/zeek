@@ -10,6 +10,8 @@ refine connection SMB_Conn += {
 			r->Assign(2, ${hdr.orig_msg_size});
 			r->Assign(3, ${hdr.flags});
 			r->Assign(4, ${hdr.session_id});
+			r->Assign(5, (${hdr.flags} & 0x0001) != 0);
+			r->Assign(6, (${hdr.flags} & 0x0002) != 0);
 
 			zeek::BifEvent::enqueue_smb2_transform_header(zeek_analyzer(),
 			                                        zeek_analyzer()->Conn(),
